@@ -1,5 +1,6 @@
 # Scrapy
-这里通过抓取简单网站简单介绍一些Scrapy的用法，
+这里通过抓取简单网站简单介绍一些Scrapy的用法
+* 参考[官方文档](https://doc.scrapy.org/en/latest/)
  
  ## 抓取[http://quotes.toscrape.com/](http://quotes.toscrape.com/)网站
  
