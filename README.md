@@ -21,7 +21,7 @@ d.  保存爬取内容<br/>
 > cd spiders  #爬取的主要代码在这里面<br/>
  
  
- #### 3. 抓取第一页 <br/><br/>
+ #### 3.1 抓取第一页 <br/><br/>
  **quotetutorial/spider/quotes.py**
  ```python
 # -*- coding: utf-8 -*-
@@ -56,7 +56,7 @@ class QuoteItem(scrapy.Item):
  ```
  > scrapy crawl quotes<br/>
  
-  #### 4. 抓取内容 <br/><br/>
+  #### 3.2 抓取内容 <br/><br/>
  **quotetutorial/quotes.py**
  ```python
 # -*- coding: utf-8 -*-
@@ -100,7 +100,32 @@ class QuoteItem(scrapy.Item):
  > quotes[0].css('.text::text').extract() # 返回一个列表<br/> 
  > text = quote.css('.text::text').extract_first() # 返回第一个元素<br/>
  
-  #### 4. 抓取内容 <br/><br/>
+ #### 3.3 翻页抓取 <br/><br/>
   
+ **quotetutorial/quotes.py**
+ ```python
+ class QuotesSpider(scrapy.Spider):
+    name = 'quotes'
+    allowed_domains = ['quotes.tosrape.com']
+    start_urls = ['http://quotes.toscrape.com/']
+
+    def parse(self, response):
+        quotes = response.css('quote')
+        for quote in quotes:
+            item = QuoteItem()
+            text = quote.css('.text::text').extract_first()
+            author = quote.css('.author::text').extract_first()
+            tag = quote.css('.tags .tag::text').extract()
+            item['text'] = text
+            item['author'] = author
+            item['tag'] = tag
+            yield (item)
+
+        next = response.css('.pager .next a::attr(href)').extract_first()
+        url = response.urljoin(next)
+        yield scrapy.Request(url=url, callback=self.parse)
+```
+ #### 3.4 保存内容 <br/><br/>
  
- 
+ > :scrapy crawl quotes -o quotes.json
+ > :scrapy crawl quotes -o quotes.
