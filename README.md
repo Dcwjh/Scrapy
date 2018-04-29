@@ -22,7 +22,7 @@ d.  保存爬取内容<br/>
  
  
  #### 3.1 抓取第一页 <br/><br/>
- **quotetutorial/spider/quotes.py**
+ * quotetutorial/spider/quotes.py
  ```python
 # -*- coding: utf-8 -*-
 import scrapy
@@ -38,7 +38,7 @@ class QuotesSpider(scrapy.Spider):
  ```
  <br/>
  
-**quotetutorial/spiders/items.py**
+* quotetutorial/spiders/items.py
 ```python
 # -*- coding: utf-8 -*-
 
@@ -57,7 +57,7 @@ class QuoteItem(scrapy.Item):
  > scrapy crawl quotes<br/>
  
   #### 3.2 抓取内容 <br/><br/>
- **quotetutorial/quotes.py**
+ * quotetutorial/quotes.py
  ```python
 # -*- coding: utf-8 -*-
 class QuotesSpider(scrapy.Spider):
@@ -66,7 +66,7 @@ class QuotesSpider(scrapy.Spider):
     start_urls = ['http://quotes.toscrape.com/']
 
     def parse(self, response):
-        quotes = response.css('quote')
+        quotes = response.css('.quote')
         for quote in quotes:
             item = QuoteItem()
             text = quote.css('.text::text').extract_first()
@@ -79,7 +79,7 @@ class QuotesSpider(scrapy.Spider):
  ```
  <br/>
  
-**quotetutorial/items.py**
+* quotetutorial/items.py
 ```python
 class QuoteItem(scrapy.Item):
     # define the fields for your item here like:
@@ -102,7 +102,7 @@ class QuoteItem(scrapy.Item):
  
  #### 3.3 翻页抓取 <br/><br/>
   
- **quotetutorial/quotes.py**
+ * quotetutorial/quotes.py
  ```python
  class QuotesSpider(scrapy.Spider):
     name = 'quotes'
@@ -110,7 +110,7 @@ class QuoteItem(scrapy.Item):
     start_urls = ['http://quotes.toscrape.com/']
 
     def parse(self, response):
-        quotes = response.css('quote')
+        quotes = response.css('.quote')
         for quote in quotes:
             item = QuoteItem()
             text = quote.css('.text::text').extract_first()
@@ -127,5 +127,41 @@ class QuoteItem(scrapy.Item):
 ```
  #### 3.4 保存内容 <br/><br/>
  
- > :scrapy crawl quotes -o quotes.json
+ ##### 保存为文件形式
+ 
+ > :scrapy crawl quotes -o quotes.json   #.csv  .jl  .json  .marshal  .pickle   .xml
  > :scrapy crawl quotes -o quotes.
+ 
+ 
+ 
+ * pipelines.py
+ ##### 保存到数据库
+ 
+ ```python
+ class MongoPipleline(object):
+
+    def __init__(self):
+        self.client = pymongo.MongoClient('localhost')
+        self.db = self.client['quotestutorial']
+
+    def process_item(self,item,spider):
+        self.db['quotes'].insert(dict(item))  # 字典形式
+        return item
+
+    def close_spider(self):
+        self.client.close()
+```
+ ##### 数据处理
+```python
+class TextPipeline(object):
+    def __init__(self):
+        self.limit = 50
+
+    def process_item(self, item, spider):
+        if item['text']:
+            if len(item['text']) > self.limit:
+                item['text'] = item['text'][0:self.limit].rstrip() + "..."
+            return item
+        else:
+            return DropItem("Missing Text")
+```
