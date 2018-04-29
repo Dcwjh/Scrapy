@@ -100,6 +100,7 @@ class QuoteItem(scrapy.Item):
  > quotes[0].css('.text::text').extract() # 返回一个列表<br/> 
  > text = quote.css('.text::text').extract_first() # 返回第一个元素<br/>
  
-   #### 5. 翻页 <br/><br/>
+  #### 4. 抓取内容 <br/><br/>
+  
  
  
