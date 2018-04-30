@@ -130,7 +130,7 @@ class QuoteItem(scrapy.Item):
  
  ##### 保存为文件形式
  
- > :scrapy crawl quotes -o quotes.json   #.csv  .jl  .json  .marshal  .pickle   .xml
+ > :scrapy crawl quotes -o quotes.json   #.csv  .jl  .json  .marshal  .pickle   .xml<br/>
  > :scrapy crawl quotes -o quotes.
  
  
