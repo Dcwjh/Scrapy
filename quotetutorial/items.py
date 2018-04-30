@@ -13,5 +13,5 @@ class QuoteItem(scrapy.Item):
     # name = scrapy.Field()
     text = scrapy.Field()
     author = scrapy.Field()
-    tag =  scrapy.Field()
+    tags =  scrapy.Field()
 
